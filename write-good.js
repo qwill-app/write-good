@@ -74,7 +74,7 @@ module.exports = function writeGood(text, opts = {}) {
     }
   });
 
-  return dedup(suggestions).sort((a, b) => (a.index < b.index ? -1 : 1));
+  return dedup(suggestions);//.sort((a, b) => (a.index < b.index ? -1 : 1));
 };
 
 module.exports.annotate = require('./lib/annotate');
