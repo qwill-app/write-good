@@ -10,15 +10,15 @@ const startsWithSo = require('./lib/starts-with-so');
 const thereIs = require('./lib/there-is');
 
 const defaultChecks = {
-  weasel: { fn: weaselWords, explanation: 'is a weasel word' },
-  illusion: { fn: lexicalIllusions, explanation: 'is repeated' },
-  so: { fn: startsWithSo, explanation: 'adds no meaning' },
-  thereIs: { fn: thereIs, explanation: 'is unnecessary verbiage' },
-  passive: { fn: passiveVoice, explanation: 'may be passive voice' },
-  adverb: { fn: adverbWhere, explanation: 'can weaken meaning' },
-  tooWordy: { fn: tooWordy, explanation: 'is wordy or unneeded' },
-  cliches: { fn: noCliches, explanation: 'is a cliche' },
-  eprime: { fn: ePrime, explanation: 'is a form of \'to be\'' }
+  weasel: { fn: weaselWords, explanation: 'is a weasel word', type: 'weasel' },
+  illusion: { fn: lexicalIllusions, explanation: 'is repeated', type: 'illusion' },
+  so: { fn: startsWithSo, explanation: 'adds no meaning', type: 'so' },
+  thereIs: { fn: thereIs, explanation: 'is unnecessary verbiage', type: 'there-is' },
+  passive: { fn: passiveVoice, explanation: 'may be passive voice', type: 'passive' },
+  adverb: { fn: adverbWhere, explanation: 'can weaken meaning', type: 'adverb' },
+  tooWordy: { fn: tooWordy, explanation: 'is wordy or unneeded', type: 'too-wordy' },
+  cliches: { fn: noCliches, explanation: 'is a cliche', type: 'cliche' },
+  eprime: { fn: ePrime, explanation: 'is a form of \'to be\'', type: 'eprime' }
 };
 
 // User must explicitly opt-in
@@ -41,12 +41,13 @@ function dedup(suggestions) {
   }, []);
 }
 
-function reasonable(text, reason) {
+function reasonable(text, reason, type) {
   return function reasonableSuggestion(suggestion) {
     // eslint-disable-next-line no-param-reassign
     suggestion.reason = `"${
       text.substr(suggestion.index, suggestion.offset)
     }" ${reason}`;
+    suggestion.type = type;
     return suggestion;
   };
 }
@@ -68,7 +69,7 @@ module.exports = function writeGood(text, opts = {}) {
       suggestions = suggestions.concat(
         finalChecks[checkName]
           .fn(text)
-          .map(reasonable(text, finalChecks[checkName].explanation))
+          .map(reasonable(text, finalChecks[checkName].explanation, finalChecks[checkName].type))
       );
     }
   });
